@@ -1,0 +1,6 @@
+Table/Column,Description,HL7 FHIR Path,Epic FHIR Path,Cerner FHIR Path
+note_category.category_id,Primary key for category,DocumentReference.category[0].id,Epic.DocumentReference.category.id,Cerner.DocumentReference.category[0].id
+note_category.category_code,Category code,DocumentReference.category[0].coding[0].code,Epic.DocumentReference.category.code,Cerner.DocumentReference.category[0].code
+note_category.category_display,Display name,DocumentReference.category[0].coding[0].display,Epic.DocumentReference.category.display,Cerner.DocumentReference.category[0].display
+note_category.loinc_code,LOINC code reference,DocumentReference.category[0].coding[0].code,Epic.DocumentReference.category.code,Cerner.DocumentReference.category[0].code
+note_category.is_active,Active status,DocumentReference.category[0].coding[0].active,Epic.DocumentReference.category.active,Cerner.DocumentReference.category[0].active

@@ -1,0 +1,13 @@
+Table/Column,Description,HL7 FHIR Path,Epic FHIR Path,Cerner FHIR Path
+note.note_id,Primary key,DocumentReference.id,Epic.DocumentReference.id,Cerner.DocumentReference.id
+note.note_id_external,External source identifier,DocumentReference.identifier,Epic.DocumentReference.identifier[0].value,Cerner.DocumentReference.identifier[0].value
+note.category_id,Reference to category,DocumentReference.category[0].coding[0],Epic.DocumentReference.category.code,Cerner.DocumentReference.category[0].coding[0]
+note.note_type,Type of note,DocumentReference.type.coding[0].display,Epic.DocumentReference.type.text,Cerner.DocumentReference.type.display
+note.note_type_code,Standardized type code,DocumentReference.type.coding[0].code,Epic.DocumentReference.type.code,Cerner.DocumentReference.type.code
+note.encounter_id,Reference to encounter,DocumentReference.context.encounter.reference,Epic.DocumentReference.visit.reference,Cerner.DocumentReference.context.reference
+note.provider_id,Reference to provider,DocumentReference.author.reference,Epic.DocumentReference.author.reference,Cerner.DocumentReference.author.reference
+note.note_date,Date of note,DocumentReference.date,Epic.DocumentReference.serviceDate,Cerner.DocumentReference.created
+note.current_version_id,Current version reference,DocumentReference.meta.versionId,Epic.DocumentReference.version,Cerner.DocumentReference.version
+note.is_active,Active status flag,DocumentReference.status,Epic.DocumentReference.status,Cerner.DocumentReference.status
+note.created_at,Creation timestamp,DocumentReference.meta.created,Epic.DocumentReference.created,Cerner.DocumentReference.meta.created
+note.updated_at,Last update timestamp,DocumentReference.meta.lastUpdated,Epic.DocumentReference.updated,Cerner.DocumentReference.meta.lastUpdated

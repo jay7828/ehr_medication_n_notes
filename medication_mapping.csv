@@ -1,0 +1,44 @@
+Table,Column,FHIR Path,Epic FHIR Path,Cerner FHIR Path,Notes
+medication,medication_id,Internal auto-incremental ID,N/A,N/A,Primary key for internal use
+medication,medication_id_external,Medication.id,Epic.Medication.id,Cerner.Medication.id,External FHIR resource ID
+medication,medication,Medication.code.coding[0].display,Epic.Medication.code.coding[0].display,Cerner.Medication.code.coding[0].display,Display name of medication
+medication,form,Medication.doseForm.coding[0].display,Epic.Medication.doseForm.coding[0].display,Cerner.Medication.doseForm.coding[0].display,Dosage form (e.g., tablet)
+medication,ingredient,Medication.ingredient[0].item.concept.coding[0].display,Epic.Medication.ingredient[0].item.concept.coding[0].display,Cerner.Medication.ingredient[0].item.concept.coding[0].display,Main ingredient
+medication,strength,Medication.ingredient[0].strengthRatio,Epic.Medication.ingredient[0].strengthRatio,Cerner.Medication.ingredient[0].strengthRatio,Strength of medication
+medication,manufacturer,Medication.contained[Organization].name,Epic.Medication.contained[Organization].name,Cerner.Medication.contained[Organization].name,Manufacturer name
+medication_request,medication_request_id,Internal auto-incremental ID,N/A,N/A,Primary key for internal use
+medication_request,medication_request_id_external,MedicationRequest.id,Epic.MedicationRequest.id,Cerner.MedicationRequest.id,External FHIR resource ID
+medication_request,medication_id,MedicationRequest.contained[Medication].id,Epic.MedicationRequest.contained[Medication].id,Cerner.MedicationRequest.contained[Medication].id,Reference to medication
+medication_request,medication,MedicationRequest.contained[Medication].code.coding[0].display,Epic.MedicationRequest.contained[Medication].code.coding[0].display,Cerner.MedicationRequest.contained[Medication].code.coding[0].display,Display name of medication
+medication_request,status,MedicationRequest.status,Epic.MedicationRequest.status,Cerner.MedicationRequest.status,Status of request
+medication_request,patient_id,MedicationRequest.subject.reference,Epic.MedicationRequest.subject.reference,Cerner.MedicationRequest.subject.reference,Patient identifier
+medication_request,practitioner_id,MedicationRequest.requester.reference,Epic.MedicationRequest.requester.reference,Cerner.MedicationRequest.requester.reference,Prescriber identifier
+medication_request,encounter_id,MedicationRequest.encounter.reference,Epic.MedicationRequest.encounter.reference,Cerner.MedicationRequest.encounter.reference,Associated encounter
+medication_request,authored_on,MedicationRequest.authoredOn,Epic.MedicationRequest.authoredOn,Cerner.MedicationRequest.authoredOn,When prescription was written
+medication_request,dosage_text,MedicationRequest.dosageInstruction[0].text,Epic.MedicationRequest.dosageInstruction[0].text,Cerner.MedicationRequest.dosageInstruction[0].text,Dosage instructions as text
+medication_request,dosage_route,MedicationRequest.dosageInstruction[0].route.coding[0].display,Epic.MedicationRequest.dosageInstruction[0].route.coding[0].display,Cerner.MedicationRequest.dosageInstruction[0].route.coding[0].display,Route of administration
+medication_request,dosage_method,MedicationRequest.dosageInstruction[0].method.coding[0].display,Epic.MedicationRequest.dosageInstruction[0].method.coding[0].display,Cerner.MedicationRequest.dosageInstruction[0].method.coding[0].display,Method of administration
+medication_request,dosage_quantity,MedicationRequest.dosageInstruction[0].doseAndRate[0].doseQuantity.value,Epic.MedicationRequest.dosageInstruction[0].doseAndRate[0].doseQuantity.value,Cerner.MedicationRequest.dosageInstruction[0].doseAndRate[0].doseQuantity.value,Dose quantity
+medication_request,dosage_unit,MedicationRequest.dosageInstruction[0].doseAndRate[0].doseQuantity.unit,Epic.MedicationRequest.dosageInstruction[0].doseAndRate[0].doseQuantity.unit,Cerner.MedicationRequest.dosageInstruction[0].doseAndRate[0].doseQuantity.unit,Dose unit
+medication_request,timing_frequency,MedicationRequest.dosageInstruction[0].timing.repeat.frequency,Epic.MedicationRequest.dosageInstruction[0].timing.repeat.frequency,Cerner.MedicationRequest.dosageInstruction[0].timing.repeat.frequency,How many times per period
+medication_request,timing_period,MedicationRequest.dosageInstruction[0].timing.repeat.period,Epic.MedicationRequest.dosageInstruction[0].timing.repeat.period,Cerner.MedicationRequest.dosageInstruction[0].timing.repeat.period,Period value
+medication_request,timing_period_unit,MedicationRequest.dosageInstruction[0].timing.repeat.periodUnit,Epic.MedicationRequest.dosageInstruction[0].timing.repeat.periodUnit,Cerner.MedicationRequest.dosageInstruction[0].timing.repeat.periodUnit,Period unit (day, week, etc.)
+medication_request,timing_start,MedicationRequest.dosageInstruction[0].timing.repeat.boundsPeriod.start,Epic.MedicationRequest.dosageInstruction[0].timing.repeat.boundsPeriod.start,Cerner.MedicationRequest.dosageInstruction[0].timing.repeat.boundsPeriod.start,When to start taking
+medication_request,timing_end,MedicationRequest.dosageInstruction[0].timing.repeat.boundsPeriod.end,Epic.MedicationRequest.dosageInstruction[0].timing.repeat.boundsPeriod.end,Cerner.MedicationRequest.dosageInstruction[0].timing.repeat.boundsPeriod.end,When to stop taking
+medication_request,note,MedicationRequest.note[0].text,Epic.MedicationRequest.note[0].text,Cerner.MedicationRequest.note[0].text,Additional notes
+medication_administration,medication_administration_id,Internal auto-incremental ID,N/A,N/A,Primary key for internal use
+medication_administration,medication_administration_id_external,MedicationAdministration.id,Epic.MedicationAdministration.id,Cerner.MedicationAdministration.id,External FHIR resource ID
+medication_administration,medication_id,MedicationAdministration.contained[Medication].id,Epic.MedicationAdministration.contained[Medication].id,Cerner.MedicationAdministration.contained[Medication].id,Reference to medication
+medication_administration,medication_display,MedicationAdministration.contained[Medication].code.coding[0].display,Epic.MedicationAdministration.contained[Medication].code.coding[0].display,Cerner.MedicationAdministration.contained[Medication].code.coding[0].display,Display name of medication
+medication_administration,status,MedicationAdministration.status,Epic.MedicationAdministration.status,Cerner.MedicationAdministration.status,Status of administration
+medication_administration,patient_id,MedicationAdministration.subject.reference,Epic.MedicationAdministration.subject.reference,Cerner.MedicationAdministration.subject.reference,Patient identifier
+medication_administration,practitioner_id,MedicationAdministration.performer[0].actor.reference.reference,Epic.MedicationAdministration.performer[0].actor.reference,Cerner.MedicationAdministration.performer[0].actor.reference,Administering practitioner identifier
+medication_administration,request_id,MedicationAdministration.request.reference,Epic.MedicationAdministration.request.reference,Cerner.MedicationAdministration.request.reference,Associated medication request
+medication_administration,encounter_id,MedicationAdministration.encounter.reference,Epic.MedicationAdministration.encounter.reference,Cerner.MedicationAdministration.encounter.reference,Associated encounter
+medication_administration,effective_start,MedicationAdministration.occurencePeriod.start,Epic.MedicationAdministration.occurencePeriod.start,Cerner.MedicationAdministration.occurencePeriod.start,When administration started
+medication_administration,effective_end,MedicationAdministration.occurencePeriod.end,Epic.MedicationAdministration.occurencePeriod.end,Cerner.MedicationAdministration.occurencePeriod.end,When administration ended
+medication_administration,dosage_text,MedicationAdministration.dosage.text,Epic.MedicationAdministration.dosage.text,Cerner.MedicationAdministration.dosage.text,Dosage instructions as text
+medication_administration,dosage_route,MedicationAdministration.dosage.route.coding[0].display,Epic.MedicationAdministration.dosage.route.coding[0].display,Cerner.MedicationAdministration.dosage.route.coding[0].display,Route of administration
+medication_administration,dosage_method,MedicationAdministration.dosage.method.coding[0].display,Epic.MedicationAdministration.dosage.method.coding[0].display,Cerner.MedicationAdministration.dosage.method.coding[0].display,Method of administration
+medication_administration,dosage_quantity,MedicationAdministration.dosage.dose.value,Epic.MedicationAdministration.dosage.dose.value,Cerner.MedicationAdministration.dosage.dose.value,Dose quantity
+medication_administration,dosage_unit,MedicationAdministration.dosage.dose.unit,Epic.MedicationAdministration.dosage.dose.unit,Cerner.MedicationAdministration.dosage.dose.unit,Dose unit

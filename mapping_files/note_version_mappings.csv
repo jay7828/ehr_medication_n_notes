@@ -1,0 +1,7 @@
+Table/Column,Description,HL7 FHIR Path,Epic FHIR Path,Cerner FHIR Path
+note_version.version_id,Primary key for version,DocumentReference.meta.versionId,Epic.DocumentReference.version,Cerner.DocumentReference.version
+note_version.note_id,Reference to note,DocumentReference.id,Epic.DocumentReference.id,Cerner.DocumentReference.id
+note_version.version_number,Version number,DocumentReference.meta.versionId,Epic.DocumentReference.version,Cerner.DocumentReference.version
+note_version.note_text,Note content,DocumentReference.content[0].attachment.data,Epic.DocumentReference.content.data,Cerner.DocumentReference.content[0].attachment.data
+note_version.author_id,Author of version,DocumentReference.author.reference,Epic.DocumentReference.author.reference,Cerner.DocumentReference.author.reference
+note_version.created_at,Version creation time,DocumentReference.date,Epic.DocumentReference.created,Cerner.DocumentReference.created

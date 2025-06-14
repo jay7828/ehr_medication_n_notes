@@ -1,0 +1,68 @@
+ER Diagram for Medication Management System
+
+[Medication]
+* id (PK)
+* code
+* code_system
+* code_display
+* dose_form
+* dose_form_code
+* dose_form_system
+* manufacturer
+* batch_number
+* expiration_date
+
+[MedicationRequest]
+* id (PK)
+* medication_id (FK -> Medication.id)
+* status
+* intent
+* patient_id
+* encounter_id
+* authored_date
+* requester_id
+* route
+* route_code
+* route_system
+* method
+* method_code
+* method_system
+* dosage_text
+* dosage_quantity
+* dosage_unit
+* timing_start
+* timing_end
+* timing_frequency
+* timing_period
+* timing_unit
+
+[MedicationAdministration]
+* id (PK)
+* medication_id (FK -> Medication.id)
+* request_id (FK -> MedicationRequest.id)
+* status
+* patient_id
+* encounter_id
+* start_time
+* end_time
+* performer_id
+* route
+* route_code
+* route_system
+* method
+* method_code
+* method_system
+* dose_quantity
+* dose_unit
+* reason_reference
+
+Relationships:
+1. Medication -|---o{ MedicationRequest (One medication can have many requests)
+2. Medication -|---o{ MedicationAdministration (One medication can have many administrations)
+3. MedicationRequest -|---o{ MedicationAdministration (One request can have many administrations)
+
+Notation:
+* PK = Primary Key
+* FK = Foreign Key
+* -|---o{ = One-to-Many relationship
+* Attributes marked with * are required

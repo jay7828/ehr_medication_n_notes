@@ -1,0 +1,251 @@
+# Clinical Notes Database Schema (Optimized)
+
+## ER Diagram (Text Format)
+```
+[NOTE]
+*note_id [PK]                      # Primary identifier for the note
+encounter_id [FK]                  # Link to encounter
+provider_id [FK]                   # Healthcare provider who created the note
+category_id [FK]                   # Note category (Nursing, Physician, Radiology, etc.)
+note_text                          # The actual note content
+note_type                          # Type of note (Progress Note, Discharge Summary, etc.)
+note_date                          # When the note was created
+subject_id [FK]                    # Patient identifier
+note_status                        # Status of the note (Preliminary, Final, etc.)
+description                        # Brief description or title of the note
+charttime                          # When the note was charted (from MIMIC)
+storetime                          # When the note was stored (from MIMIC)
+is_error                          # Whether the note contains errors
+is_archived                        # Whether note is archived
+created_at                         # Creation timestamp
+updated_at                         # Last update timestamp
+created_by                         # User who created the note
+updated_by                         # User who last updated the note
+
+[CATEGORY]
+*category_id [PK]                  # Category identifier
+category_name                      # Name of category (Nursing, Physician, etc.)
+description                        # Category description
+is_active                         # Whether category is active
+
+[SUBJECT]
+*subject_id [PK]                   # Patient identifier
+gender                             # Patient gender
+dob                               # Date of birth
+is_active                         # Whether patient is active
+
+[ENCOUNTER]
+*encounter_id [PK]                 # Unique encounter identifier
+subject_id [FK]                    # Link to patient
+encounter_date                     # Date of encounter
+encounter_type                     # Type of encounter
+department                         # Department where encounter occurred
+
+[PROVIDER]
+*provider_id [PK]                  # Provider identifier
+provider_name                      # Name of provider
+department                         # Department
+is_active                         # Whether provider is active
+
+Relationships:
+NOTE }--|| SUBJECT: "belongs to"
+NOTE }--|| ENCOUNTER: "associated with"
+NOTE }--|| PROVIDER: "written by"
+NOTE }--|| CATEGORY: "belongs to"
+ENCOUNTER }--|| SUBJECT: "belongs to"
+```
+
+## PostgreSQL Schema
+```sql
+-- Create schemas
+CREATE SCHEMA IF NOT EXISTS app;
+CREATE SCHEMA IF NOT EXISTS meta;
+
+-- Category table (based on MIMIC)
+CREATE TABLE meta.category (
+    category_id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    category_name TEXT NOT NULL,
+    description TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert common MIMIC note categories
+INSERT INTO meta.category (category_name, description) VALUES
+    ('Nursing', 'Nursing notes and documentation'),
+    ('Physician', 'Physician notes and documentation'),
+    ('Radiology', 'Radiology reports'),
+    ('Echo', 'Echocardiogram reports'),
+    ('ECG', 'ECG/EKG reports'),
+    ('Respiratory', 'Respiratory therapy notes'),
+    ('Nutrition', 'Nutrition notes'),
+    ('Social Work', 'Social worker notes'),
+    ('Case Management', 'Case management notes'),
+    ('Pharmacy', 'Pharmacy notes'),
+    ('Discharge Summary', 'Discharge summaries'),
+    ('Consult', 'Consultation notes'),
+    ('General', 'General/Other medical notes');
+
+-- Subject (Patient) table
+CREATE TABLE app.subject (
+    subject_id BIGINT PRIMARY KEY,
+    gender VARCHAR(10),
+    dob DATE,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Provider table
+CREATE TABLE app.provider (
+    provider_id BIGINT PRIMARY KEY,
+    provider_name TEXT NOT NULL,
+    department TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Encounter table
+CREATE TABLE app.encounter (
+    encounter_id BIGINT PRIMARY KEY,
+    subject_id BIGINT NOT NULL REFERENCES app.subject(subject_id),
+    encounter_date DATE NOT NULL,
+    encounter_type TEXT,
+    department TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_subject
+        FOREIGN KEY(subject_id) 
+        REFERENCES app.subject(subject_id)
+);
+
+-- Note table
+CREATE TABLE app.note (
+    note_id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    encounter_id BIGINT REFERENCES app.encounter(encounter_id),
+    provider_id BIGINT REFERENCES app.provider(provider_id),
+    subject_id BIGINT NOT NULL REFERENCES app.subject(subject_id),
+    category_id BIGINT REFERENCES meta.category(category_id),
+    note_text TEXT NOT NULL,
+    note_type TEXT NOT NULL,
+    note_date DATE NOT NULL,
+    note_status TEXT NOT NULL DEFAULT 'preliminary',
+    description TEXT,
+    charttime TIMESTAMP WITH TIME ZONE,    -- When note was actually written (MIMIC)
+    storetime TIMESTAMP WITH TIME ZONE,    -- When note was stored in system (MIMIC)
+    is_error BOOLEAN DEFAULT false,
+    is_archived BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by BIGINT NOT NULL,
+    updated_by BIGINT,
+    CONSTRAINT valid_status CHECK (note_status IN ('preliminary', 'final', 'amended', 'deleted'))
+);
+
+-- Indexes for optimization
+CREATE INDEX idx_note_subject ON app.note(subject_id);
+CREATE INDEX idx_note_encounter ON app.note(encounter_id);
+CREATE INDEX idx_note_provider ON app.note(provider_id);
+CREATE INDEX idx_note_category ON app.note(category_id);
+CREATE INDEX idx_note_date ON app.note(note_date);
+CREATE INDEX idx_note_type ON app.note(note_type);
+CREATE INDEX idx_note_status ON app.note(note_status);
+CREATE INDEX idx_note_charttime ON app.note(charttime);
+CREATE INDEX idx_note_error ON app.note(is_error);
+CREATE INDEX idx_category_name ON meta.category(category_name);
+CREATE INDEX idx_encounter_subject ON app.encounter(subject_id);
+CREATE INDEX idx_encounter_date ON app.encounter(encounter_date);
+
+-- Updated timestamp trigger
+CREATE OR REPLACE FUNCTION update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_note_updated_at
+    BEFORE UPDATE ON app.note
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at();
+
+-- Sample queries for common operations
+/*
+-- Get all notes for a patient with categories
+SELECT 
+    n.*,
+    e.encounter_type,
+    p.provider_name,
+    c.category_name
+FROM app.note n
+LEFT JOIN app.encounter e ON n.encounter_id = e.encounter_id
+LEFT JOIN app.provider p ON n.provider_id = p.provider_id
+LEFT JOIN meta.category c ON n.category_id = c.category_id
+WHERE n.subject_id = ?
+ORDER BY n.charttime DESC;
+
+-- Get recent notes by provider
+SELECT n.*, s.gender, s.dob
+FROM app.note n
+JOIN app.subject s ON n.subject_id = s.subject_id
+WHERE n.provider_id = ?
+  AND n.note_date >= CURRENT_DATE - INTERVAL '30 days'
+ORDER BY n.note_date DESC;
+
+-- Get notes by encounter
+SELECT n.*, p.provider_name
+FROM app.note n
+JOIN app.provider p ON n.provider_id = p.provider_id
+WHERE n.encounter_id = ?
+ORDER BY n.created_at;
+*/
+
+-- Configuration
+ALTER TABLE app.note SET (autovacuum_enabled = on);
+```
+
+## Key Features
+
+1. **Simplified Structure**
+   - Only essential tables and fields
+   - Focused on clinical note management
+   - Optimized for common operations
+
+2. **Performance Optimizations**
+   - Strategic indexes on frequently queried fields
+   - Proper timestamp management
+   - Autovacuum enabled for maintenance
+
+3. **Data Integrity**
+   - Foreign key constraints
+   - Status validation
+   - Required fields enforcement
+
+4. **Scalability Considerations**
+   - Minimal denormalization
+   - Efficient indexing strategy
+   - Binary data segregation
+
+## Common Operations
+
+1. **Note Creation**
+   - Insert into note table
+   - Auto-generated note_id
+   - Automatic timestamp handling
+
+2. **Note Retrieval**
+   - By patient
+   - By encounter
+   - By provider
+   - By date range
+
+3. **Note Updates**
+   - Automatic timestamp updates
+   - Status tracking
+   - Archive functionality
+
+4. **Data Relationships**
+   - Patient -> Notes (one-to-many)
+   - Encounter -> Notes (one-to-many)
+   - Provider -> Notes (one-to-many)
