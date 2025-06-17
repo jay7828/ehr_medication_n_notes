@@ -1,5 +1,5 @@
-2025-06-13 16:24:25,525 - ERROR - Error creating schema: table note_category already exists
-2025-06-13 16:24:28,000 - INFO - Found 10712 DocumentReference resources
-2025-06-13 16:24:28,077 - INFO - Imported 10 categories
-2025-06-13 16:28:05,713 - INFO - Imported 10712 notes with 10712 versions
-2025-06-13 16:28:05,715 - INFO - Import complete. Added 10 categories, 10712 notes, and 10712 versions.
+2025-06-17 16:48:36,694 - ERROR - Error creating schema: table note_category already exists
+2025-06-17 16:48:37,875 - INFO - Found 10712 DocumentReference resources
+2025-06-17 16:48:37,903 - INFO - Imported 10 categories
+2025-06-17 16:50:51,360 - INFO - Imported 10712 notes with 10712 versions
+2025-06-17 16:50:51,362 - INFO - Import complete. Added 10 categories, 10712 notes, and 10712 versions.

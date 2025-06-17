@@ -7,7 +7,7 @@ def create_healthcare_database():
     
     # Define the path to the schema file
     schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'healthcare_sqlite_schema.sql')
-    schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'clinical_notes_schema_corrected.sql')
+    schema_path2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'clinical_notes_schema_corrected.sql')
     
     # Check if the database file already exists
     if os.path.exists(db_path):
@@ -28,10 +28,13 @@ def create_healthcare_database():
         # Read the schema file
         with open(schema_path, 'r') as f:
             schema_script = f.read()
-        
+        with open(schema_path2, 'r') as f:
+            schema_script2 = f.read()
+
         # Execute the schema script
         conn.executescript(schema_script)
-        
+        conn.executescript(schema_script2)
+
         # Commit the changes
         conn.commit()
         
